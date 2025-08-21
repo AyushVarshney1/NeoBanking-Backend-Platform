@@ -1,0 +1,5 @@
+GRPC localhost:9001/AuthService/ExtractUserId
+
+{
+  "token": ""
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "auth";
+
+service AuthService{
+  rpc ExtractUserId (AuthRequest) returns (AuthResponse);
+}
+
+message AuthRequest{
+  string token = 1;
+}
+
+message AuthResponse{
+  string userId = 1;
+}
