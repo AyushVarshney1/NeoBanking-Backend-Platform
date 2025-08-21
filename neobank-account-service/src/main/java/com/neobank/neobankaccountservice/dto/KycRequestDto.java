@@ -1,7 +1,6 @@
 package com.neobank.neobankaccountservice.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,10 +8,11 @@ import lombok.Setter;
 @Setter
 public class KycRequestDto {
 
-    @NotBlank(message = "Account Number is required")
+    @NotNull(message = "Account Number is required")
+    @Positive(message = "Account Number should be positive")
     private Long accountNumber;
 
-    @NotBlank(message = "Pan Number is required")
+    @NotNull(message = "Pan Number is required")
     @Size(min = 10, max = 10)
     private String panNumber;
 

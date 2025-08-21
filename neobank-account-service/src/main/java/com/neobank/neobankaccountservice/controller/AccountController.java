@@ -3,6 +3,7 @@ package com.neobank.neobankaccountservice.controller;
 import com.neobank.neobankaccountservice.dto.*;
 import com.neobank.neobankaccountservice.exception.InvalidTokenException;
 import com.neobank.neobankaccountservice.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,7 +111,7 @@ public class AccountController {
 
     // COMPLETE KYC FOR ACCOUNT
     @PostMapping("/kyc/complete-kyc")
-    public ResponseEntity<KycResponseDto> completeKyc(@RequestHeader("Authorization") String token, @RequestBody KycRequestDto kycRequestDto){
+    public ResponseEntity<KycResponseDto> completeKyc(@RequestHeader("Authorization") String token, @Valid @RequestBody KycRequestDto kycRequestDto){
         if(token == null || !token.startsWith("Bearer ")){
             throw new InvalidTokenException("Invalid Token");
         }
@@ -136,7 +137,7 @@ public class AccountController {
     @PostMapping("/deposit")
     public ResponseEntity<AccountBalanceResponseDto> depositAmount(
             @RequestHeader("Authorization") String token,
-            @RequestBody AccountTransactionAmountRequestDto accountTransactionAmountRequestDto){
+            @Valid @RequestBody AccountTransactionAmountRequestDto accountTransactionAmountRequestDto){
         if(token == null || !token.startsWith("Bearer ")){
             throw new InvalidTokenException("Invalid Token");
         }
@@ -150,7 +151,7 @@ public class AccountController {
     @PostMapping("/withdraw")
     public ResponseEntity<AccountBalanceResponseDto> withdrawAmount(
             @RequestHeader("Authorization") String token,
-            @RequestBody AccountTransactionAmountRequestDto accountTransactionAmountRequestDto){
+            @Valid @RequestBody AccountTransactionAmountRequestDto accountTransactionAmountRequestDto){
         if(token == null || !token.startsWith("Bearer ")){
             throw new InvalidTokenException("Invalid Token");
         }

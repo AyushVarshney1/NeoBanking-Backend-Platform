@@ -1,5 +1,6 @@
 package com.neobank.authservice.util;
 
+import com.neobank.authservice.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -46,9 +47,9 @@ public class JwtUtil {
                     .build()
                     .parseSignedClaims(token);
         }catch(SignatureException e){
-            throw new JwtException("Invalid JWT Signature");
+            throw new InvalidTokenException("Invalid JWT Signature");
         }catch(JwtException e){
-            throw new JwtException("Invalid JWT");
+            throw new InvalidTokenException("Invalid JWT");
         }
     }
 
@@ -60,12 +61,17 @@ public class JwtUtil {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (JwtException e) {
-            throw new JwtException("Invalid or expired JWT", e);
+            throw new InvalidTokenException("Invalid or expired JWT: " + e.getMessage());
         }
     }
 
     public String extractEmail(String token) {
-        return extractAllClaims(token).getSubject();
+        Claims claims = extractAllClaims(token);
+        String subject = claims.getSubject();
+        if (subject == null || subject.isBlank()) {
+            throw new InvalidTokenException("JWT does not contain subject (email)");
+        }
+        return subject;
     }
 
     public String extractRole(String token) {

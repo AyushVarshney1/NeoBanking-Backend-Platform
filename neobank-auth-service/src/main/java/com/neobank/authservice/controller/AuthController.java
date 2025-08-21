@@ -28,7 +28,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponseDto> signup(@Validated({Default.class, SignUpValidationGroup.class}) @Valid @RequestBody AuthRequestDto authRequestDto) {
+    public ResponseEntity<AuthResponseDto> signup(@Validated({Default.class, SignUpValidationGroup.class}) @RequestBody AuthRequestDto authRequestDto) {
         userService.createUser(authRequestDto);
         AuthResponseDto authResponseDto = authService.generateToken(authRequestDto);
 
@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@Validated({Default.class}) @Valid @RequestBody AuthRequestDto authRequestDto) {
+    public ResponseEntity<AuthResponseDto> login(@Validated({Default.class}) @RequestBody AuthRequestDto authRequestDto) {
         User user = userService.findUserByEmail(authRequestDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User with email: " + authRequestDto.getEmail() + " not found"));
 

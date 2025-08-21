@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/NeoBanking Backend Platform – Scalable Microservices Architecture.iml" filepath="$PROJECT_DIR$/.idea/NeoBanking Backend Platform – Scalable Microservices Architecture.iml" />
       <module fileurl="file://$PROJECT_DIR$/neobank-account-service/neobank-account-service.iml" filepath="$PROJECT_DIR$/neobank-account-service/neobank-account-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/neobank-transaction-service/neobank-transaction-service.iml" filepath="$PROJECT_DIR$/neobank-transaction-service/neobank-transaction-service.iml" />
     </modules>
   </component>
 </project>

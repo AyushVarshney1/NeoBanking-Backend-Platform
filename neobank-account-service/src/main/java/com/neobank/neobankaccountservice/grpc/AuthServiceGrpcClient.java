@@ -3,8 +3,11 @@ package com.neobank.neobankaccountservice.grpc;
 import auth.AuthRequest;
 import auth.AuthResponse;
 import auth.AuthServiceGrpc;
+import com.neobank.neobankaccountservice.exception.UnauthorizedException;
+import com.neobank.neobankaccountservice.exception.UserNotFoundException;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,10 +32,30 @@ public class AuthServiceGrpcClient {
 
         AuthRequest request = AuthRequest.newBuilder().setToken(token).build();
 
-        AuthResponse response = blockingStub.extractUserId(request);
+        try {
+            AuthResponse response = blockingStub.extractUserId(request);
+            log.info("Received response from Auth service via GRPC: {}", response);
+            return response.getUserId();
 
-        log.info("Received response from Auth service via GRPC: {}", response);
-
-        return response.getUserId();
+        } catch (StatusRuntimeException e) {
+            switch (e.getStatus().getCode()) {
+                case UNAUTHENTICATED -> {
+                    log.warn("Invalid or expired token: {}", e.getStatus().getDescription());
+                    throw new UnauthorizedException(
+                            e.getStatus().getDescription() != null ? e.getStatus().getDescription() : "Invalid token"
+                    );
+                }
+                case NOT_FOUND -> {
+                    log.warn("User not found for token: {}", e.getStatus().getDescription());
+                    throw new UserNotFoundException(
+                            e.getStatus().getDescription() != null ? e.getStatus().getDescription() : "User ID not found"
+                    );
+                }
+                default -> {
+                    log.error("Auth service gRPC error: {} - {}", e.getStatus().getCode(), e.getMessage());
+                    throw new RuntimeException("Auth service error: " + e.getStatus().getDescription(), e);
+                }
+            }
+        }
     }
 }

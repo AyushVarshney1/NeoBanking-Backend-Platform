@@ -3,5 +3,6 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/neobank-account-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/neobank-auth-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neobank-transaction-service/src/main/java" charset="UTF-8" />
   </component>
 </project>

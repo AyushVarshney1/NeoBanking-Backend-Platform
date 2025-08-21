@@ -3,6 +3,8 @@ package com.neobank.authservice.service;
 import com.neobank.authservice.dto.AuthRequestDto;
 import com.neobank.authservice.dto.AuthResponseDto;
 import com.neobank.authservice.dto.UserResponseDto;
+import com.neobank.authservice.exception.InvalidTokenException;
+import com.neobank.authservice.exception.UserNotFoundException;
 import com.neobank.authservice.model.User;
 import com.neobank.authservice.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
@@ -47,14 +49,9 @@ public class AuthService {
         }
     }
 
-    public User extractUser(String token){
-
-        String email = jwtUtil.extractEmail(token);
-        Optional<User> optionalUser = userService.findUserByEmail(email);
-        if(optionalUser.isEmpty()){
-           throw new UsernameNotFoundException("User not found");
-        }
-
-        return optionalUser.get();
+    public User extractUser(String token) {
+        String email = jwtUtil.extractEmail(token);  // throws InvalidTokenException if bad
+        return userService.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found for email: " + email));
     }
 }
