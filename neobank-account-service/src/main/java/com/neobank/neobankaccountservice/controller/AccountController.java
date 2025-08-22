@@ -133,32 +133,4 @@ public class AccountController {
     }
 
 
-    // DEPOSIT AMOUNT
-    @PostMapping("/deposit")
-    public ResponseEntity<AccountBalanceResponseDto> depositAmount(
-            @RequestHeader("Authorization") String token,
-            @Valid @RequestBody AccountTransactionAmountRequestDto accountTransactionAmountRequestDto){
-        if(token == null || !token.startsWith("Bearer ")){
-            throw new InvalidTokenException("Invalid Token");
-        }
-
-        AccountBalanceResponseDto accountBalanceResponseDto = accountService.deposit(token.substring(7),accountTransactionAmountRequestDto);
-        return ResponseEntity.ok(accountBalanceResponseDto);
-    }
-
-
-    // WITHDRAW AMOUNT
-    @PostMapping("/withdraw")
-    public ResponseEntity<AccountBalanceResponseDto> withdrawAmount(
-            @RequestHeader("Authorization") String token,
-            @Valid @RequestBody AccountTransactionAmountRequestDto accountTransactionAmountRequestDto){
-        if(token == null || !token.startsWith("Bearer ")){
-            throw new InvalidTokenException("Invalid Token");
-        }
-
-        AccountBalanceResponseDto accountBalanceResponseDto = accountService.withdraw(token.substring(7),accountTransactionAmountRequestDto);
-        return ResponseEntity.ok(accountBalanceResponseDto);
-    }
-
-
 }

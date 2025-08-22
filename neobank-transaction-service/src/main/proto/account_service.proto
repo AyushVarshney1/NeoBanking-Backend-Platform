@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "account";
+
+service AccountService {
+  rpc IncreaseBalance (BalanceUpdateRequest) returns (BalanceUpdateResponse);
+  rpc DecreaseBalance (BalanceUpdateRequest) returns (BalanceUpdateResponse);
+  rpc Transfer (TransferRequest) returns (TransferResponse);
+}
+
+message BalanceUpdateRequest {
+  string userId = 1;
+  int64 accountNumber = 2;
+  double amount = 3;
+}
+message BalanceUpdateResponse {
+  bool success = 1;
+  double newBalance = 2;
+}
+
+message TransferRequest {
+  string userId = 1;
+  int64 accountNumber = 2;
+  int64 beneficiaryAccountNumber = 3;
+  double amount = 4;
+}
+message TransferResponse {
+  bool success = 1;
+  double fromNewBalance = 2;
+}

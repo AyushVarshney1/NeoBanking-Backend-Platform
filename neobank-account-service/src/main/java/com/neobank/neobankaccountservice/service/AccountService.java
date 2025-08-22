@@ -167,10 +167,7 @@ public class AccountService {
         return accountMapper.toKycResponseDto(kyc);
     }
 
-    public AccountBalanceResponseDto deposit(String token, AccountTransactionAmountRequestDto accountTransactionAmountRequestDto) {
-        String userId = authServiceGrpcClient.extractUserId(token);
-
-        Long accountNumber = accountTransactionAmountRequestDto.getAccountNumber();
+    public AccountBalanceResponseDto deposit(String userId, Long accountNumber, double amount) {
 
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 
@@ -185,7 +182,7 @@ public class AccountService {
         }
 
         Double currentBalance = account.getBalance();
-        Double newBalance = currentBalance + accountTransactionAmountRequestDto.getAmount();
+        Double newBalance = currentBalance + amount;
 
         account.setBalance(newBalance);
 
@@ -193,10 +190,7 @@ public class AccountService {
         return accountMapper.toAccountBalanceResponseDto(account);
     }
 
-    public AccountBalanceResponseDto withdraw(String token, AccountTransactionAmountRequestDto accountTransactionAmountRequestDto) {
-        String userId = authServiceGrpcClient.extractUserId(token);
-
-        Long accountNumber = accountTransactionAmountRequestDto.getAccountNumber();
+    public AccountBalanceResponseDto withdraw(String userId, Long accountNumber, double amount) {
 
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 
@@ -211,15 +205,61 @@ public class AccountService {
         }
 
         Double currentBalance = account.getBalance();
-        Double withdrawAmount = accountTransactionAmountRequestDto.getAmount();
-        if(currentBalance < withdrawAmount){
-            throw new InsufficientFundsException("Insufficient funds to withdraw amount : " + withdrawAmount + ", Current Balance : " + currentBalance);
+        if(currentBalance < amount){
+            throw new InsufficientFundsException("Insufficient funds to withdraw amount : " + amount + ", Current Balance : " + currentBalance);
         }
-        Double newBalance = currentBalance - withdrawAmount;
+        Double newBalance = currentBalance - amount;
 
         account.setBalance(newBalance);
 
         accountRepository.save(account);
+        return accountMapper.toAccountBalanceResponseDto(account);
+    }
+
+    public AccountBalanceResponseDto transfer(String userId, Long accountNumber, Long beneficiaryAccountNumber, double amount) {
+
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
+
+        if(account  == null){
+            throw new AccountNotFoundException("Account with Account Number: " + accountNumber + " does not exist.");
+        }
+
+        Account beneficiaryAccount = accountRepository.findByAccountNumber(beneficiaryAccountNumber);
+
+        if(beneficiaryAccount  == null){
+            throw new AccountNotFoundException("Beneficiary Account with Account Number: " + beneficiaryAccountNumber + " does not exist.");
+        }
+
+        Kyc kyc = kycRepository.findByAccount(account);
+
+        if(kyc == null){
+            throw new KycNotCompleteException("Kyc for Account with Account Number: " + accountNumber + " is incomplete. Complete KYC to transfer amount");
+        }
+
+        Kyc beneficiaryKyc = kycRepository.findByAccount(beneficiaryAccount);
+
+        if(beneficiaryKyc == null){
+            throw new KycNotCompleteException("Kyc for Beneficiary Account with Account Number: " + beneficiaryAccountNumber + " is incomplete. Complete KYC to transfer amount");
+        }
+
+        Double currentBalance = account.getBalance();
+        Double beneficiaryCurrentBalance = beneficiaryAccount.getBalance();
+
+
+        if(currentBalance < amount){
+            throw new InsufficientFundsException("Insufficient funds to withdraw amount : " + amount + ", Current Balance : " + currentBalance);
+        }
+
+        Double newBalance = currentBalance - amount;
+        Double beneficiaryNewBalance = beneficiaryCurrentBalance + amount;
+
+
+        account.setBalance(newBalance);
+        beneficiaryAccount.setBalance(beneficiaryNewBalance);
+
+        accountRepository.save(account);
+        accountRepository.save(beneficiaryAccount);
+
         return accountMapper.toAccountBalanceResponseDto(account);
     }
 }
