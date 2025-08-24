@@ -2,6 +2,7 @@ package com.neobank.authservice.service;
 
 import com.neobank.authservice.dto.AuthRequestDto;
 import com.neobank.authservice.exception.UserAlreadyExistsException;
+import com.neobank.authservice.kafka.AuthEventProducer;
 import com.neobank.authservice.model.User;
 import com.neobank.authservice.model.enums.Role;
 import com.neobank.authservice.repository.UserRepository;
@@ -17,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthEventProducer authEventProducer;
 
     public void createUser(AuthRequestDto authRequestDto){
 
@@ -30,6 +32,8 @@ public class UserService {
         }
 
         userRepository.save(user);
+
+        authEventProducer.sendUserCreatedEvent(user.getEmail());
     }
 
     public Optional<User> findUserByEmail(String email){

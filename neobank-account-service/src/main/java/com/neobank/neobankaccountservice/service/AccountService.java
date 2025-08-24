@@ -3,6 +3,7 @@ package com.neobank.neobankaccountservice.service;
 import com.neobank.neobankaccountservice.dto.*;
 import com.neobank.neobankaccountservice.exception.*;
 import com.neobank.neobankaccountservice.grpc.AuthServiceGrpcClient;
+import com.neobank.neobankaccountservice.kafka.AccountEventProducer;
 import com.neobank.neobankaccountservice.mapper.AccountMapper;
 import com.neobank.neobankaccountservice.model.Account;
 import com.neobank.neobankaccountservice.model.Kyc;
@@ -25,12 +26,15 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final KycRepository kycRepository;
     private final GenerateRandomAccountNumber generateRandomAccountNumber;
+    private final AccountEventProducer accountEventProducer;
 
     public AccountResponseDto createAccount(String token) {
 
         System.out.println("Creating account with token: " + token);
 
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Long accountNumber;
 
@@ -44,11 +48,19 @@ public class AccountService {
         account.setStatus(AccountStatus.ACTIVE);
 
         accountRepository.save(account);
+
+        AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setAccountNumber(account.getAccountNumber());
+        accountProducerDto.setEmail(email);
+
+        accountEventProducer.sendAccountCreatedEvent(accountProducerDto);
+
         return accountMapper.toAccountResponseDto(account);
     }
 
     public AccountResponseDto getAccount(String token, Long accountNumber) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
 
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 
@@ -60,7 +72,8 @@ public class AccountService {
     }
 
     public List<AccountResponseDto> getAllAccounts(String token) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
 
         List<Account> accounts = accountRepository.findAllByUserId(UUID.fromString(userId));
 
@@ -68,7 +81,8 @@ public class AccountService {
     }
 
     public AccountBalanceResponseDto getBalance(String token, Long accountNumber) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
 
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 
@@ -84,7 +98,9 @@ public class AccountService {
     }
 
     public void deactivateAccount(String token, Long accountNumber) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Account account =  accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 
@@ -98,10 +114,20 @@ public class AccountService {
 
         account.setStatus(AccountStatus.INACTIVE);
         accountRepository.save(account);
+
+        AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setAccountNumber(accountNumber);
+        accountProducerDto.setEmail(email);
+        accountProducerDto.setStatus("Deactivated");
+        accountProducerDto.setBalance(account.getBalance());
+
+        accountEventProducer.sendAccountStatusUpdatedEvent(accountProducerDto);
     }
 
     public void activateAccount(String token, Long accountNumber) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 
@@ -115,10 +141,20 @@ public class AccountService {
 
         account.setStatus(AccountStatus.ACTIVE);
         accountRepository.save(account);
+
+        AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setAccountNumber(accountNumber);
+        accountProducerDto.setEmail(email);
+        accountProducerDto.setStatus("Activated");
+        accountProducerDto.setBalance(account.getBalance());
+
+        accountEventProducer.sendAccountStatusUpdatedEvent(accountProducerDto);
     }
 
     public KycResponseDto completeKyc(String token, KycRequestDto kycRequestDto) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Account account = accountRepository.findByAccountNumberAndUserId(kycRequestDto.getAccountNumber(), UUID.fromString(userId));
 
@@ -141,12 +177,19 @@ public class AccountService {
 
         kycRepository.save(kyc);
 
+        AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setAccountNumber(account.getAccountNumber());
+        accountProducerDto.setEmail(email);
+
+        accountEventProducer.sendKycCompletedEvent(accountProducerDto);
+
         return accountMapper.toKycResponseDto(kyc);
 
     }
 
     public KycResponseDto getKyc(String token, Long accountNumber) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
 
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber,UUID.fromString(userId));
 

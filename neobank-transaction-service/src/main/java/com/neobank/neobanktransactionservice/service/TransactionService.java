@@ -1,9 +1,12 @@
 package com.neobank.neobanktransactionservice.service;
 
+import com.neobank.neobanktransactionservice.dto.AuthGrpcResponseDto;
+import com.neobank.neobanktransactionservice.dto.TransactionProducerDto;
 import com.neobank.neobanktransactionservice.dto.TransactionRequestDto;
 import com.neobank.neobanktransactionservice.dto.TransactionResponseDto;
 import com.neobank.neobanktransactionservice.grpc.AccountServiceGrpcClient;
 import com.neobank.neobanktransactionservice.grpc.AuthServiceGrpcClient;
+import com.neobank.neobanktransactionservice.kafka.TransactionEventProducer;
 import com.neobank.neobanktransactionservice.mapper.TransactionMapper;
 import com.neobank.neobanktransactionservice.model.Transaction;
 import com.neobank.neobanktransactionservice.model.TransactionStatus;
@@ -22,9 +25,12 @@ public class TransactionService {
     private final AuthServiceGrpcClient authServiceGrpcClient;
     private final AccountServiceGrpcClient accountServiceGrpcClient;
     private final TransactionMapper transactionMapper;
+    private final TransactionEventProducer transactionEventProducer;
 
     public TransactionResponseDto deposit(String token, TransactionRequestDto transactionRequestDto) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Transaction transaction = new Transaction();
         transaction.setAccountNumber(transactionRequestDto.getAccountNumber());
@@ -42,11 +48,24 @@ public class TransactionService {
 
         transactionRepository.save(savedTransaction);
 
+        TransactionProducerDto transactionProducerDto = new TransactionProducerDto();
+        transactionProducerDto.setTransactionId(String.valueOf(savedTransaction.getTransactionId()));
+        transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
+        transactionProducerDto.setAmount(savedTransaction.getAmount());
+        transactionProducerDto.setBalance(savedTransaction.getClosingBalance());
+        transactionProducerDto.setTypeOfTransaction(TransactionType.DEPOSIT.name());
+        transactionProducerDto.setEmail(email);
+
+        // KAFKA EVENT PRODUCER
+        transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
+
         return transactionMapper.toTransactionResponseDto(savedTransaction);
     }
 
     public TransactionResponseDto withdraw(String token, TransactionRequestDto transactionRequestDto) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Transaction transaction = new Transaction();
         transaction.setAccountNumber(transactionRequestDto.getAccountNumber());
@@ -64,11 +83,24 @@ public class TransactionService {
 
         transactionRepository.save(savedTransaction);
 
+        TransactionProducerDto transactionProducerDto = new TransactionProducerDto();
+        transactionProducerDto.setTransactionId(String.valueOf(savedTransaction.getTransactionId()));
+        transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
+        transactionProducerDto.setAmount(savedTransaction.getAmount());
+        transactionProducerDto.setBalance(savedTransaction.getClosingBalance());
+        transactionProducerDto.setTypeOfTransaction(TransactionType.WITHDRAW.name());
+        transactionProducerDto.setEmail(email);
+
+        // KAFKA EVENT PRODUCER
+        transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
+
         return transactionMapper.toTransactionResponseDto(savedTransaction);
     }
 
     public TransactionResponseDto transfer(String token, TransactionRequestDto transactionRequestDto) {
-        String userId = authServiceGrpcClient.extractUserId(token);
+        AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndEmail(token);
+        String userId = authGrpcResponseDto.getUserId();
+        String email = authGrpcResponseDto.getEmail();
 
         Transaction transaction = new Transaction();
         transaction.setAccountNumber(transactionRequestDto.getAccountNumber());
@@ -86,6 +118,17 @@ public class TransactionService {
         savedTransaction.setClosingBalance(newBalance);
 
         transactionRepository.save(savedTransaction);
+
+        TransactionProducerDto transactionProducerDto = new TransactionProducerDto();
+        transactionProducerDto.setTransactionId(String.valueOf(savedTransaction.getTransactionId()));
+        transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
+        transactionProducerDto.setBeneficiaryNumber(transactionRequestDto.getBeneficiaryAccountNumber());
+        transactionProducerDto.setAmount(savedTransaction.getAmount());
+        transactionProducerDto.setBalance(savedTransaction.getClosingBalance());
+        transactionProducerDto.setEmail(email);
+
+        // KAFKA EVENT PRODUCER
+        transactionEventProducer.sendAmountTransferEvent(transactionProducerDto);
 
         return transactionMapper.toTransactionResponseDto(savedTransaction);
     }

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package account.events;
+option java_multiple_files = true;
+
+message AccountCreatedEvent{
+  string email = 1;
+  int64 accountNumber = 2;
+}
+
+message AccountStatusUpdatedEvent{
+  string email = 1;
+  int64 accountNumber = 2;
+  string status = 3;
+  double balance = 4;
+}
+
+message KycCompletedEvent{
+  string email = 1;
+  int64 accountNumber = 2;
+}

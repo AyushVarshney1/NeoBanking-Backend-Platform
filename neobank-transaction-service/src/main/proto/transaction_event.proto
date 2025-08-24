@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package transaction.events;
+option java_multiple_files = true;
+
+message BalanceUpdateEvent{
+  string transactionId = 1;
+  string email = 2;
+  int64 accountNumber = 3;
+  double amount = 4;
+  double balance = 5;
+  string typeOfTransaction = 6;
+}
+
+message TransferEvent{
+  string transactionId = 1;
+  string email = 2;
+  int64 accountNumber = 3;
+  int64 beneficiaryAccountNumber = 4;
+  double amount = 5;
+  double balance = 6;
+}

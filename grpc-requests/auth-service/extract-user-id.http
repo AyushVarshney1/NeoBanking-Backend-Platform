@@ -1,5 +1,5 @@
-GRPC localhost:9001/AuthService/ExtractUserId
+GRPC localhost:9001/AuthService/ExtractUserIdAndEmail
 
 {
-  "token": ""
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJicnVoQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NTk2MjI3NywiZXhwIjoxNzU1OTk4Mjc3fQ.dNZ_zG6qvvMUzYGGYNoE1UJ-arUUqWG8dbFDiXal0HRGBNOjZDG00nD0aeMAynzO"
 }

@@ -3,6 +3,7 @@ package com.neobank.neobanktransactionservice.grpc;
 import auth.AuthRequest;
 import auth.AuthResponse;
 import auth.AuthServiceGrpc;
+import com.neobank.neobanktransactionservice.dto.AuthGrpcResponseDto;
 import com.neobank.neobanktransactionservice.exception.UnauthorizedException;
 import com.neobank.neobanktransactionservice.exception.UserNotFoundException;
 import io.grpc.ManagedChannel;
@@ -28,14 +29,17 @@ public class AuthServiceGrpcClient {
         blockingStub = AuthServiceGrpc.newBlockingStub(channel);
     }
 
-    public String extractUserId(String token) {
+    public AuthGrpcResponseDto extractUserIdAndEmail(String token) {
 
         AuthRequest request = AuthRequest.newBuilder().setToken(token).build();
 
         try {
-            AuthResponse response = blockingStub.extractUserId(request);
+            AuthResponse response = blockingStub.extractUserIdAndEmail(request);
             log.info("Received response from Auth service via GRPC: {}", response);
-            return response.getUserId();
+            AuthGrpcResponseDto authGrpcResponseDto = new  AuthGrpcResponseDto();
+            authGrpcResponseDto.setUserId(response.getUserId());
+            authGrpcResponseDto.setEmail(response.getEmail());
+            return authGrpcResponseDto;
 
         } catch (StatusRuntimeException e) {
             switch (e.getStatus().getCode()) {

@@ -22,7 +22,7 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
     private final AuthService authService;
 
     @Override
-    public void extractUserId(AuthRequest authRequest, StreamObserver<AuthResponse> responseObserver) {
+    public void extractUserIdAndEmail(AuthRequest authRequest, StreamObserver<AuthResponse> responseObserver) {
         log.info("extractUserId request received and token is : {}", authRequest.getToken());
 
         try {
@@ -30,6 +30,7 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
 
             AuthResponse response = AuthResponse.newBuilder()
                     .setUserId(user.getId().toString())
+                    .setEmail(user.getEmail())
                     .build();
 
             responseObserver.onNext(response);
