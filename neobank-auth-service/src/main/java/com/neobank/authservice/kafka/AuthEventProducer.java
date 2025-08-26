@@ -14,8 +14,9 @@ public class AuthEventProducer {
     private static final Logger log = LoggerFactory.getLogger(AuthEventProducer.class);
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
-    public void sendUserCreatedEvent(String email){
+    public void sendUserCreatedEvent(String userId, String email){
         UserCreatedEvent userCreatedEvent = UserCreatedEvent.newBuilder()
+                .setUserId(userId)
                 .setEmail(email)
                 .build();
 

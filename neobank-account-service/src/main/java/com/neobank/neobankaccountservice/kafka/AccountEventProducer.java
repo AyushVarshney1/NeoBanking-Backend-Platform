@@ -19,6 +19,7 @@ public class AccountEventProducer {
 
     public void sendAccountCreatedEvent(AccountProducerDto accountProducerDto) {
         AccountCreatedEvent accountCreatedEvent = AccountCreatedEvent.newBuilder()
+                .setUserId(accountProducerDto.getUserId())
                 .setEmail(accountProducerDto.getEmail())
                 .setAccountNumber(accountProducerDto.getAccountNumber())
                 .build();
@@ -35,6 +36,7 @@ public class AccountEventProducer {
 
     public void sendAccountStatusUpdatedEvent(AccountProducerDto accountProducerDto) {
         AccountStatusUpdatedEvent accountStatusUpdatedEvent = AccountStatusUpdatedEvent.newBuilder()
+                .setUserId(accountProducerDto.getUserId())
                 .setEmail(accountProducerDto.getEmail())
                 .setAccountNumber(accountProducerDto.getAccountNumber())
                 .setStatus(accountProducerDto.getStatus())
@@ -53,6 +55,7 @@ public class AccountEventProducer {
 
     public void sendKycCompletedEvent(AccountProducerDto accountProducerDto) {
         KycCompletedEvent kycCompletedEvent = KycCompletedEvent.newBuilder()
+                .setUserId(accountProducerDto.getUserId())
                 .setEmail(accountProducerDto.getEmail())
                 .setAccountNumber(accountProducerDto.getAccountNumber())
                 .build();

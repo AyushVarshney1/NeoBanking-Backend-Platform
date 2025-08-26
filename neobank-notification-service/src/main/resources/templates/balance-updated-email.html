@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; background-color:#f4f6f7; padding:20px;">
+<div style="max-width:600px; margin:auto; background-color:#ffffff;
+                padding:25px; border-radius:10px; border:1px solid #e0e0e0;">
+
+    <p style="font-size:16px; color:#333; text-align:center;">
+        Dear Customer,<br><br>
+        A <strong th:text="${transactionType}">Transaction</strong> has been processed for your NeoBank account.
+    </p>
+
+    <div style="margin:20px auto; padding:15px; border:1px solid #eee; border-radius:8px; max-width:500px;">
+        <p style="font-size:15px; color:#555; margin:8px 0;">
+            <strong>Transaction ID:</strong> <span th:text="${transactionId}">TXN123456</span>
+        </p>
+        <p style="font-size:15px; color:#555; margin:8px 0;">
+            <strong>Account Number:</strong> <span th:text="${accountNumber}">1234567890</span>
+        </p>
+        <p style="font-size:15px; color:#555; margin:8px 0;">
+            <strong>Registered Email:</strong> <span th:text="${userEmail}">user@example.com</span>
+        </p>
+        <p style="font-size:15px; color:#555; margin:8px 0;">
+            <strong>Amount:</strong> ₹<span th:text="${amount}">1000</span>
+        </p>
+        <p style="font-size:15px; color:#555; margin:8px 0;">
+            <strong>Account Balance:</strong> ₹<span th:text="${balance}">5000</span>
+        </p>
+    </div>
+
+    <p style="text-align:center; color:#777; font-size:14px;">
+        Cheers,<br>NeoBank Team
+    </p>
+
+    <hr style="margin:30px 0; border:none; border-top:1px solid #eee;">
+    <p style="font-size:12px; color:#999; text-align:center;">
+        © 2025 NeoBank. All rights reserved.<br>
+        This is an automated message, please do not reply.
+    </p>
+</div>
+</body>
+</html>

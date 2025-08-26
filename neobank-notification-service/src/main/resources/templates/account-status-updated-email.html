@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+<div style="max-width:600px; margin:auto; background-color:#fff;
+                padding:25px; border-radius:10px; border:1px solid #e0e0e0;">
+
+    <p style="font-size:16px; color:#333; text-align:center;">
+        Your <strong>NeoBank account</strong> has been
+        <span th:text="${status}" th:style="'color:' + ${statusColor} + '; font-weight:bold;'">
+          Updated
+        </span>.
+    </p>
+
+    <p style="font-size:15px; color:#555; text-align:center;">
+        Account Number: <b th:text="${accountNumber}">1234567890</b>
+    </p>
+
+    <p style="font-size:15px; color:#555; text-align:center;">
+        Registered Email: <b th:text="${userEmail}">user@example.com</b>
+    </p>
+
+    <p style="font-size:15px; color:#555; text-align:center;">
+        If you believe this is a mistake or need assistance, please contact our support team.
+    </p>
+
+    <p style="text-align:center; color:#777; font-size:14px;">
+        Cheers,<br>NeoBank Team
+    </p>
+
+    <hr style="margin:30px 0; border:none; border-top:1px solid #eee;">
+    <p style="font-size:12px; color:#999; text-align:center;">
+        © 2025 NeoBank. All rights reserved.<br>
+        This is an automated message, please do not reply.
+    </p>
+</div>
+</body>
+</html>

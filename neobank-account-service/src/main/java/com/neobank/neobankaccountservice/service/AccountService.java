@@ -50,6 +50,7 @@ public class AccountService {
         accountRepository.save(account);
 
         AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setUserId(userId);
         accountProducerDto.setAccountNumber(account.getAccountNumber());
         accountProducerDto.setEmail(email);
 
@@ -116,6 +117,7 @@ public class AccountService {
         accountRepository.save(account);
 
         AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setUserId(userId);
         accountProducerDto.setAccountNumber(accountNumber);
         accountProducerDto.setEmail(email);
         accountProducerDto.setStatus("Deactivated");
@@ -143,6 +145,7 @@ public class AccountService {
         accountRepository.save(account);
 
         AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setUserId(userId);
         accountProducerDto.setAccountNumber(accountNumber);
         accountProducerDto.setEmail(email);
         accountProducerDto.setStatus("Activated");
@@ -178,6 +181,7 @@ public class AccountService {
         kycRepository.save(kyc);
 
         AccountProducerDto accountProducerDto = new AccountProducerDto();
+        accountProducerDto.setUserId(userId);
         accountProducerDto.setAccountNumber(account.getAccountNumber());
         accountProducerDto.setEmail(email);
 

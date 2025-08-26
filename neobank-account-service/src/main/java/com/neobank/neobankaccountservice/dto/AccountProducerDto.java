@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class AccountProducerDto {
 
+    String userId;
     String email;
     Long accountNumber;
 

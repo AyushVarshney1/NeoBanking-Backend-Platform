@@ -33,7 +33,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        authEventProducer.sendUserCreatedEvent(user.getEmail());
+        authEventProducer.sendUserCreatedEvent(String.valueOf(user.getId()),user.getEmail());
     }
 
     public Optional<User> findUserByEmail(String email){

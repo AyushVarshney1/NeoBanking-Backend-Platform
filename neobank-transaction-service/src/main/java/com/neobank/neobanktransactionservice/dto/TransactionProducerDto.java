@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class TransactionProducerDto {
 
+    String userId;
     String transactionId;
     Long accountNumber;
     // ONLY REQUIRED IN TRANSFER EVENT

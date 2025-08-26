@@ -49,6 +49,7 @@ public class TransactionService {
         transactionRepository.save(savedTransaction);
 
         TransactionProducerDto transactionProducerDto = new TransactionProducerDto();
+        transactionProducerDto.setUserId(userId);
         transactionProducerDto.setTransactionId(String.valueOf(savedTransaction.getTransactionId()));
         transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
         transactionProducerDto.setAmount(savedTransaction.getAmount());
@@ -84,6 +85,7 @@ public class TransactionService {
         transactionRepository.save(savedTransaction);
 
         TransactionProducerDto transactionProducerDto = new TransactionProducerDto();
+        transactionProducerDto.setUserId(userId);
         transactionProducerDto.setTransactionId(String.valueOf(savedTransaction.getTransactionId()));
         transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
         transactionProducerDto.setAmount(savedTransaction.getAmount());
@@ -120,6 +122,7 @@ public class TransactionService {
         transactionRepository.save(savedTransaction);
 
         TransactionProducerDto transactionProducerDto = new TransactionProducerDto();
+        transactionProducerDto.setUserId(userId);
         transactionProducerDto.setTransactionId(String.valueOf(savedTransaction.getTransactionId()));
         transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
         transactionProducerDto.setBeneficiaryNumber(transactionRequestDto.getBeneficiaryAccountNumber());

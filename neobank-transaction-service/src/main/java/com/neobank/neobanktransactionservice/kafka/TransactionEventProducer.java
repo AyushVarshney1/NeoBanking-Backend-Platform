@@ -19,6 +19,7 @@ public class TransactionEventProducer {
 
     public void sendBalanceUpdateEvent(TransactionProducerDto transactionProducerDto) {
         BalanceUpdateEvent balanceUpdateEvent = BalanceUpdateEvent.newBuilder()
+                .setUserId(transactionProducerDto.getUserId())
                 .setTransactionId(transactionProducerDto.getTransactionId())
                 .setAccountNumber(transactionProducerDto.getAccountNumber())
                 .setTypeOfTransaction(transactionProducerDto.getTypeOfTransaction())
@@ -39,6 +40,7 @@ public class TransactionEventProducer {
 
     public void sendAmountTransferEvent(TransactionProducerDto transactionProducerDto) {
         TransferEvent amountTransferEvent = TransferEvent.newBuilder()
+                .setUserId(transactionProducerDto.getUserId())
                 .setTransactionId(transactionProducerDto.getTransactionId())
                 .setAccountNumber(transactionProducerDto.getAccountNumber())
                 .setBeneficiaryAccountNumber(transactionProducerDto.getBeneficiaryNumber())
