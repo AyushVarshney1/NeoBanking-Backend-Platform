@@ -1,6 +1,7 @@
 package com.neobank.neobankauditservice.controller;
 
 import com.neobank.neobankauditservice.dto.AuditLogResponseDto;
+import com.neobank.neobankauditservice.dto.AuditStatsResponseDto;
 import com.neobank.neobankauditservice.exception.InvalidTokenException;
 import com.neobank.neobankauditservice.service.AuditService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AuditController {
 
         String token = header.substring(7);
 
-        List<AuditLogResponseDto> auditLogResponseDtos = auditService.findAllAuditsByUserId(token);
+        List<AuditLogResponseDto> auditLogResponseDtos = auditService.getAllAuditsByUserId(token);
 
         return ResponseEntity.ok(auditLogResponseDtos);
     }
@@ -40,7 +41,7 @@ public class AuditController {
 
         String token = header.substring(7);
 
-        List<AuditLogResponseDto> auditLogResponseDtos = auditService.findAllAuditsByAccountNumber(token,accountNumber);
+        List<AuditLogResponseDto> auditLogResponseDtos = auditService.getAllAuditsByAccountNumber(token,accountNumber);
 
         return ResponseEntity.ok(auditLogResponseDtos);
     }
@@ -54,7 +55,7 @@ public class AuditController {
 
         String token = header.substring(7);
 
-        List<AuditLogResponseDto> auditLogResponseDtos = auditService.findAllAudits(token);
+        List<AuditLogResponseDto> auditLogResponseDtos = auditService.getAllAudits(token);
 
         return ResponseEntity.ok(auditLogResponseDtos);
     }
@@ -68,7 +69,7 @@ public class AuditController {
 
         String token = header.substring(7);
 
-        AuditLogResponseDto auditLogResponseDto = auditService.findByAuditId(token,auditId);
+        AuditLogResponseDto auditLogResponseDto = auditService.getByAuditId(token,auditId);
 
         return ResponseEntity.ok(auditLogResponseDto);
     }
@@ -82,12 +83,12 @@ public class AuditController {
 
         String token = header.substring(7);
 
-        List<AuditLogResponseDto> auditLogResponseDtos = auditService.findAllAuditsByUserIdForAdmin(token,userId);
+        List<AuditLogResponseDto> auditLogResponseDtos = auditService.getAllAuditsByUserIdForAdmin(token,userId);
 
         return ResponseEntity.ok(auditLogResponseDtos);
     }
 
-    // RETURNS THE AUDIT RELATED TO TRANSACTION ID BY ADMIN
+    // RETURNS THE AUDIT RELATED TO TRANSACTION ID GIVEN BY ADMIN
     @GetMapping("/transaction/{transactionId}")
     public ResponseEntity<AuditLogResponseDto> getAuditLogByTransactionIdForAdmin(@RequestHeader("Authorization") String header, @PathVariable String transactionId) {
         if(header==null || !header.startsWith("Bearer ")){
@@ -96,8 +97,22 @@ public class AuditController {
 
         String token = header.substring(7);
 
-        AuditLogResponseDto auditLogResponseDto = auditService.findAuditByTransactionIdForAdmin(token,transactionId);
+        AuditLogResponseDto auditLogResponseDto = auditService.getAuditByTransactionIdForAdmin(token,transactionId);
 
         return ResponseEntity.ok(auditLogResponseDto);
+    }
+
+    // RETURNS ALL AUDITS STATS FOR ADMIN
+    @GetMapping("/stats")
+    public ResponseEntity<AuditStatsResponseDto> getAuditStats(
+            @RequestHeader("Authorization") String header) {
+
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new InvalidTokenException("Authorization header is incorrect");
+        }
+
+        AuditStatsResponseDto auditStatsResponseDto = auditService.getAuditStatsForAdmin();
+
+        return ResponseEntity.ok(auditStatsResponseDto);
     }
 }

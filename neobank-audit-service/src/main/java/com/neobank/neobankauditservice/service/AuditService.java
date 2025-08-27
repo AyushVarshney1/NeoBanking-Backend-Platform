@@ -1,6 +1,7 @@
 package com.neobank.neobankauditservice.service;
 
 import com.neobank.neobankauditservice.dto.AuditLogResponseDto;
+import com.neobank.neobankauditservice.dto.AuditStatsResponseDto;
 import com.neobank.neobankauditservice.dto.AuthGrpcResponseDto;
 import com.neobank.neobankauditservice.exception.AuditLogNotFoundException;
 import com.neobank.neobankauditservice.exception.UnauthorizedException;
@@ -27,7 +28,7 @@ public class AuditService {
         auditRepository.save(auditLog);
     }
 
-    public List<AuditLogResponseDto> findAllAuditsByUserId(String token) {
+    public List<AuditLogResponseDto> getAllAuditsByUserId(String token) {
         AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndRole(token);
 
         String userId = authGrpcResponseDto.getUserId();
@@ -38,7 +39,7 @@ public class AuditService {
         return auditLogResponseDtoList;
     }
 
-    public List<AuditLogResponseDto> findAllAuditsByAccountNumber(String token, Long accountNumber) {
+    public List<AuditLogResponseDto> getAllAuditsByAccountNumber(String token, Long accountNumber) {
         AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndRole(token);
 
         String userId = authGrpcResponseDto.getUserId();
@@ -49,7 +50,7 @@ public class AuditService {
         return auditLogResponseDtoList;
     }
 
-    public List<AuditLogResponseDto> findAllAudits(String token) {
+    public List<AuditLogResponseDto> getAllAudits(String token) {
         AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndRole(token);
 
         String userRole =  authGrpcResponseDto.getRole();
@@ -63,7 +64,7 @@ public class AuditService {
         return auditLogResponseDtoList;
     }
 
-    public AuditLogResponseDto findByAuditId(String token, Long auditId) {
+    public AuditLogResponseDto getByAuditId(String token, Long auditId) {
         AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndRole(token);
 
         String userRole =  authGrpcResponseDto.getRole();
@@ -77,7 +78,7 @@ public class AuditService {
         return auditMapper.toAuditLogResponseDto(auditLog);
     }
 
-    public List<AuditLogResponseDto> findAllAuditsByUserIdForAdmin(String token, String userId) {
+    public List<AuditLogResponseDto> getAllAuditsByUserIdForAdmin(String token, String userId) {
         AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndRole(token);
 
         String userRole =  authGrpcResponseDto.getRole();
@@ -92,7 +93,7 @@ public class AuditService {
         return auditLogResponseDtoList;
     }
 
-    public AuditLogResponseDto findAuditByTransactionIdForAdmin(String token, String transactionId){
+    public AuditLogResponseDto getAuditByTransactionIdForAdmin(String token, String transactionId){
         AuthGrpcResponseDto authGrpcResponseDto = authServiceGrpcClient.extractUserIdAndRole(token);
 
         String userRole =  authGrpcResponseDto.getRole();
@@ -104,6 +105,16 @@ public class AuditService {
         AuditLog auditLog = auditRepository.findByTransactionId(transactionId).orElseThrow(() -> new AuditLogNotFoundException("AuditLog with transaction id: " + transactionId + " not found"));;
 
         return auditMapper.toAuditLogResponseDto(auditLog);
+    }
+
+    public AuditStatsResponseDto getAuditStatsForAdmin() {
+        return new AuditStatsResponseDto(
+                auditRepository.getTotalTransactions(),
+                auditRepository.getSuccessCount(),
+                auditRepository.getFailedCount(),
+                auditRepository.getTotalVolume(),
+                auditRepository.getLatestTransactionTime()
+        );
     }
 
 }
