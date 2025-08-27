@@ -2,6 +2,7 @@ package com.neobank.neobankauditservice.service;
 
 import com.neobank.neobankauditservice.dto.AuditLogResponseDto;
 import com.neobank.neobankauditservice.dto.AuthGrpcResponseDto;
+import com.neobank.neobankauditservice.exception.AuditLogNotFoundException;
 import com.neobank.neobankauditservice.exception.UnauthorizedException;
 import com.neobank.neobankauditservice.grpc.AuthServiceGrpcClient;
 import com.neobank.neobankauditservice.mapper.AuditMapper;
@@ -71,7 +72,7 @@ public class AuditService {
             throw new UnauthorizedException("Only Admins are allowed to get audit log by audit id");
         }
 
-        AuditLog auditLog = auditRepository.findById(auditId).orElseThrow(() -> new RuntimeException("AuditLog with id: " + auditId + " not found"));
+        AuditLog auditLog = auditRepository.findById(auditId).orElseThrow(() -> new AuditLogNotFoundException("AuditLog with id: " + auditId + " not found"));
 
         return auditMapper.toAuditLogResponseDto(auditLog);
     }
@@ -100,7 +101,7 @@ public class AuditService {
             throw new UnauthorizedException("Only Admins are allowed to get audit log by transaction id");
         }
 
-        AuditLog auditLog = auditRepository.findByTransactionId(transactionId).orElseThrow(() -> new RuntimeException("AuditLog with transaction id: " + transactionId + " not found"));;
+        AuditLog auditLog = auditRepository.findByTransactionId(transactionId).orElseThrow(() -> new AuditLogNotFoundException("AuditLog with transaction id: " + transactionId + " not found"));;
 
         return auditMapper.toAuditLogResponseDto(auditLog);
     }
