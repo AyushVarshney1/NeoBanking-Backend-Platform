@@ -54,4 +54,9 @@ public class AuthService {
         return userService.findUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found for email: " + email));
     }
+
+    public String extractRole(String token){
+        String role = jwtUtil.extractRole(token);
+        return role;
+    }
 }

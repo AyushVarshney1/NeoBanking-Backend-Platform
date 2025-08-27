@@ -1,5 +1,7 @@
 package com.neobank.neobanktransactionservice.dto;
 
+import com.neobank.neobanktransactionservice.model.TransactionStatus;
+import com.neobank.neobanktransactionservice.model.TransactionType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,5 +18,7 @@ public class TransactionProducerDto {
     Double amount;
     Double balance;
     // ONLY REQUIRED IN BALANCE UPDATE EVENT
-    String typeOfTransaction;
+    TransactionType typeOfTransaction;
+
+    TransactionStatus transactionStatus;
 }

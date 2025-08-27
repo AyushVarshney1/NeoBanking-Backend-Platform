@@ -6,12 +6,15 @@ import account.BalanceUpdateRequest;
 import account.BalanceUpdateResponse;
 import account.TransferRequest;
 import account.TransferResponse;
+import com.neobank.neobanktransactionservice.dto.TransactionProducerDto;
 import com.neobank.neobanktransactionservice.exception.InsufficientFundsException;
 import com.neobank.neobanktransactionservice.exception.TransactionFailedException;
 import com.neobank.neobanktransactionservice.exception.UnauthorizedException;
 import com.neobank.neobanktransactionservice.exception.UserNotFoundException;
+import com.neobank.neobanktransactionservice.kafka.TransactionEventProducer;
 import com.neobank.neobanktransactionservice.model.Transaction;
 import com.neobank.neobanktransactionservice.model.TransactionStatus;
+import com.neobank.neobanktransactionservice.model.TransactionType;
 import com.neobank.neobanktransactionservice.repository.TransactionRepository;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -27,11 +30,13 @@ public class AccountServiceGrpcClient {
     private static final Logger log = LoggerFactory.getLogger(AccountServiceGrpcClient.class);
     private final AccountServiceGrpc.AccountServiceBlockingStub blockingStub;
     private final TransactionRepository transactionRepository;
+    private final TransactionEventProducer  transactionEventProducer;
 
     public AccountServiceGrpcClient(@Value("${account.service.address:localhost}") String serverAddress,
-                                    @Value("${account.service.grpc.port:9001}") int serverPort, TransactionRepository transactionRepository) {
+                                    @Value("${account.service.grpc.port:9001}") int serverPort, TransactionRepository transactionRepository, TransactionEventProducer transactionEventProducer) {
 
         this.transactionRepository = transactionRepository;
+        this.transactionEventProducer = transactionEventProducer;
 
         log.info("Connecting to Account service GRPC service at {}:{}", serverAddress, serverPort);
 
@@ -54,6 +59,17 @@ public class AccountServiceGrpcClient {
             if (!response.getSuccess()) {
                 transaction.setStatus(TransactionStatus.FAILED);
                 transactionRepository.save(transaction);
+
+                TransactionProducerDto transactionProducerDto  = new TransactionProducerDto();
+                transactionProducerDto.setAccountNumber(accountNumber);
+                transactionProducerDto.setUserId(userId);
+                transactionProducerDto.setAmount(amount);
+                transactionProducerDto.setTransactionStatus(TransactionStatus.FAILED);
+                transactionProducerDto.setTypeOfTransaction(TransactionType.DEPOSIT);
+                transactionProducerDto.setTransactionId(transaction.getTransactionId().toString());
+
+                transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
+
                 throw new TransactionFailedException("Transaction Failed");
             }
 
@@ -63,6 +79,16 @@ public class AccountServiceGrpcClient {
             // Mark transaction as failed
             transaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(transaction);
+
+            TransactionProducerDto transactionProducerDto  = new TransactionProducerDto();
+            transactionProducerDto.setAccountNumber(accountNumber);
+            transactionProducerDto.setUserId(userId);
+            transactionProducerDto.setAmount(amount);
+            transactionProducerDto.setTransactionStatus(TransactionStatus.FAILED);
+            transactionProducerDto.setTypeOfTransaction(TransactionType.DEPOSIT);
+            transactionProducerDto.setTransactionId(transaction.getTransactionId().toString());
+
+            transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
 
             switch (e.getStatus().getCode()) {
                 case NOT_FOUND -> {
@@ -105,6 +131,17 @@ public class AccountServiceGrpcClient {
             if (!response.getSuccess()) {
                 transaction.setStatus(TransactionStatus.FAILED);
                 transactionRepository.save(transaction);
+
+                TransactionProducerDto transactionProducerDto  = new TransactionProducerDto();
+                transactionProducerDto.setAccountNumber(accountNumber);
+                transactionProducerDto.setUserId(userId);
+                transactionProducerDto.setAmount(amount);
+                transactionProducerDto.setTransactionStatus(TransactionStatus.FAILED);
+                transactionProducerDto.setTypeOfTransaction(TransactionType.WITHDRAW);
+                transactionProducerDto.setTransactionId(transaction.getTransactionId().toString());
+
+                transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
+
                 throw new TransactionFailedException("Transaction Failed");
             }
 
@@ -113,6 +150,16 @@ public class AccountServiceGrpcClient {
         } catch (StatusRuntimeException e) {
             transaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(transaction);
+
+            TransactionProducerDto transactionProducerDto  = new TransactionProducerDto();
+            transactionProducerDto.setAccountNumber(accountNumber);
+            transactionProducerDto.setUserId(userId);
+            transactionProducerDto.setAmount(amount);
+            transactionProducerDto.setTransactionStatus(TransactionStatus.FAILED);
+            transactionProducerDto.setTypeOfTransaction(TransactionType.WITHDRAW);
+            transactionProducerDto.setTransactionId(transaction.getTransactionId().toString());
+
+            transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
 
             switch (e.getStatus().getCode()) {
                 case NOT_FOUND -> {
@@ -164,6 +211,18 @@ public class AccountServiceGrpcClient {
             if (!response.getSuccess()) {
                 transaction.setStatus(TransactionStatus.FAILED);
                 transactionRepository.save(transaction);
+
+                TransactionProducerDto transactionProducerDto  = new TransactionProducerDto();
+                transactionProducerDto.setAccountNumber(accountNumber);
+                transactionProducerDto.setBeneficiaryNumber(transaction.getTargetAccountNumber());
+                transactionProducerDto.setUserId(userId);
+                transactionProducerDto.setAmount(amount);
+                transactionProducerDto.setTransactionStatus(TransactionStatus.FAILED);
+                transactionProducerDto.setTypeOfTransaction(TransactionType.TRANSFER);
+                transactionProducerDto.setTransactionId(transaction.getTransactionId().toString());
+
+                transactionEventProducer.sendAmountTransferEvent(transactionProducerDto);
+
                 throw new TransactionFailedException("Transaction Failed");
             }
 
@@ -172,6 +231,17 @@ public class AccountServiceGrpcClient {
         } catch (StatusRuntimeException e) {
             transaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(transaction);
+
+            TransactionProducerDto transactionProducerDto  = new TransactionProducerDto();
+            transactionProducerDto.setAccountNumber(accountNumber);
+            transactionProducerDto.setBeneficiaryNumber(transaction.getTargetAccountNumber());
+            transactionProducerDto.setUserId(userId);
+            transactionProducerDto.setAmount(amount);
+            transactionProducerDto.setTransactionStatus(TransactionStatus.FAILED);
+            transactionProducerDto.setTypeOfTransaction(TransactionType.TRANSFER);
+            transactionProducerDto.setTransactionId(transaction.getTransactionId().toString());
+
+            transactionEventProducer.sendAmountTransferEvent(transactionProducerDto);
 
             switch (e.getStatus().getCode()) {
                 case NOT_FOUND -> {

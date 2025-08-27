@@ -10,6 +10,7 @@
         <module name="auth-service" />
         <module name="neobank-transaction-service" />
         <module name="neobank-auth-service" />
+        <module name="neobank-audit-service" />
         <module name="neobank-notification-service" />
       </profile>
     </annotationProcessing>
@@ -18,6 +19,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="auth-service" options="-parameters" />
       <module name="neobank-account-service" options="-parameters" />
+      <module name="neobank-audit-service" options="-parameters" />
       <module name="neobank-auth-service" options="-parameters" />
       <module name="neobank-notification-service" options="-parameters" />
       <module name="neobank-transaction-service" options="-parameters" />

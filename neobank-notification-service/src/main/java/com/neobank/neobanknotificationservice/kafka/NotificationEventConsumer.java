@@ -110,7 +110,9 @@ public class NotificationEventConsumer {
             notification.setType(balanceUpdateEvent.getTypeOfTransaction().equals("DEPOSIT") ? NotificationType.TRANSACTION_DEPOSITED : NotificationType.TRANSACTION_WITHDRAWN);
             notification.setAccountNumber(balanceUpdateEvent.getAccountNumber());
 
-            notificationService.sendBalanceUpdatedNotification(notification, balanceUpdateEvent.getBalance(), balanceUpdateEvent.getAmount(), balanceUpdateEvent.getTransactionId());
+            if(balanceUpdateEvent.getStatus().equals("SUCCESS")){
+                notificationService.sendBalanceUpdatedNotification(notification, balanceUpdateEvent.getBalance(), balanceUpdateEvent.getAmount(), balanceUpdateEvent.getTransactionId());
+            }
 
         }  catch (InvalidProtocolBufferException e) {
             log.error("Error deserializing event {}", e.getMessage());
@@ -129,7 +131,9 @@ public class NotificationEventConsumer {
             notification.setType(NotificationType.TRANSACTION_TRANSFERRED);
             notification.setAccountNumber(transferEvent.getAccountNumber());
 
-            notificationService.sendTransferNotification(notification, transferEvent.getBalance(), transferEvent.getAmount(), transferEvent.getTransactionId(), transferEvent.getBeneficiaryAccountNumber());
+            if(transferEvent.getStatus().equals("SUCCESS")){
+                notificationService.sendTransferNotification(notification, transferEvent.getBalance(), transferEvent.getAmount(), transferEvent.getTransactionId(), transferEvent.getBeneficiaryAccountNumber());
+            }
 
         }  catch (InvalidProtocolBufferException e) {
             log.error("Error deserializing event {}", e.getMessage());

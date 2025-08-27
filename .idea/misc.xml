@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/neobank-account-service/pom.xml" />
         <option value="$PROJECT_DIR$/neobank-transaction-service/pom.xml" />
         <option value="$PROJECT_DIR$/neobank-notification-service/pom.xml" />
+        <option value="$PROJECT_DIR$/neobank-audit-service/pom.xml" />
       </list>
     </option>
   </component>

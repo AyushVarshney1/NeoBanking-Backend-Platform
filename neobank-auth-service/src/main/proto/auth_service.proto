@@ -5,6 +5,7 @@ option java_package = "auth";
 
 service AuthService{
   rpc ExtractUserIdAndEmail (AuthRequest) returns (AuthResponse);
+  rpc ExtractUserIdAndRole (AuthRoleRequest) returns (AuthRoleResponse);
 }
 
 message AuthRequest{
@@ -14,4 +15,13 @@ message AuthRequest{
 message AuthResponse{
   string userId = 1;
   string email = 2;
+}
+
+message AuthRoleRequest{
+  string token = 1;
+}
+
+message AuthRoleResponse{
+  string userId = 1;
+  string role = 2;
 }

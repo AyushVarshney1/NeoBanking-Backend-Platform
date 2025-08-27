@@ -294,7 +294,7 @@ public class AccountService {
 
 
         if(currentBalance < amount){
-            throw new InsufficientFundsException("Insufficient funds to withdraw amount : " + amount + ", Current Balance : " + currentBalance);
+            throw new InsufficientFundsException("Insufficient funds to transfer amount : " + amount + ", Current Balance : " + currentBalance);
         }
 
         Double newBalance = currentBalance - amount;

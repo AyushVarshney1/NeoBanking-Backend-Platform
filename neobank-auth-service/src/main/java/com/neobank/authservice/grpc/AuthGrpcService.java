@@ -1,8 +1,6 @@
 package com.neobank.authservice.grpc;
 
-import auth.AuthRequest;
-import auth.AuthResponse;
-import auth.AuthServiceGrpc;
+import auth.*;
 import com.neobank.authservice.exception.InvalidTokenException;
 import com.neobank.authservice.exception.UserNotFoundException;
 import com.neobank.authservice.model.User;
@@ -23,7 +21,7 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Override
     public void extractUserIdAndEmail(AuthRequest authRequest, StreamObserver<AuthResponse> responseObserver) {
-        log.info("extractUserId request received and token is : {}", authRequest.getToken());
+        log.info("extractUserIdAndEmail request received and token is : {}", authRequest.getToken());
 
         try {
             User user = authService.extractUser(authRequest.getToken());
@@ -31,6 +29,49 @@ public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
             AuthResponse response = AuthResponse.newBuilder()
                     .setUserId(user.getId().toString())
                     .setEmail(user.getEmail())
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (InvalidTokenException e) {
+            log.error("Invalid or expired JWT: {}", e.getMessage());
+            responseObserver.onError(
+                    Status.UNAUTHENTICATED
+                            .withDescription(e.getMessage())
+                            .augmentDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+
+        } catch (UserNotFoundException e) {
+            log.error("User not found for token: {}", e.getMessage());
+            responseObserver.onError(
+                    Status.NOT_FOUND
+                            .withDescription("User ID/Email not found")
+                            .asRuntimeException()
+            );
+
+        } catch (Exception e) {
+            log.error("Unexpected error in extractUserId", e);
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription("Auth Service internal error")
+                            .augmentDescription(e.getMessage())
+                            .asRuntimeException()
+            );
+        }
+    }
+
+    @Override
+    public void extractUserIdAndRole(AuthRoleRequest authRoleRequest, StreamObserver<AuthRoleResponse> responseObserver) {
+        log.info("extractUserIdAndRole request received and token is : {}", authRoleRequest.getToken());
+
+        try {
+            User user = authService.extractUser(authRoleRequest.getToken());
+
+            AuthRoleResponse response = AuthRoleResponse.newBuilder()
+                    .setUserId(user.getId().toString())
+                    .setRole(user.getRole().toString())
                     .build();
 
             responseObserver.onNext(response);

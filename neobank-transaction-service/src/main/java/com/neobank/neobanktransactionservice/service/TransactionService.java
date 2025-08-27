@@ -54,8 +54,9 @@ public class TransactionService {
         transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
         transactionProducerDto.setAmount(savedTransaction.getAmount());
         transactionProducerDto.setBalance(savedTransaction.getClosingBalance());
-        transactionProducerDto.setTypeOfTransaction(TransactionType.DEPOSIT.name());
+        transactionProducerDto.setTypeOfTransaction(TransactionType.DEPOSIT);
         transactionProducerDto.setEmail(email);
+        transactionProducerDto.setTransactionStatus(TransactionStatus.SUCCESS);
 
         // KAFKA EVENT PRODUCER
         transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
@@ -90,8 +91,9 @@ public class TransactionService {
         transactionProducerDto.setAccountNumber(savedTransaction.getAccountNumber());
         transactionProducerDto.setAmount(savedTransaction.getAmount());
         transactionProducerDto.setBalance(savedTransaction.getClosingBalance());
-        transactionProducerDto.setTypeOfTransaction(TransactionType.WITHDRAW.name());
+        transactionProducerDto.setTypeOfTransaction(TransactionType.WITHDRAW);
         transactionProducerDto.setEmail(email);
+        transactionProducerDto.setTransactionStatus(TransactionStatus.SUCCESS);
 
         // KAFKA EVENT PRODUCER
         transactionEventProducer.sendBalanceUpdateEvent(transactionProducerDto);
@@ -129,6 +131,7 @@ public class TransactionService {
         transactionProducerDto.setAmount(savedTransaction.getAmount());
         transactionProducerDto.setBalance(savedTransaction.getClosingBalance());
         transactionProducerDto.setEmail(email);
+        transactionProducerDto.setTransactionStatus(TransactionStatus.SUCCESS);
 
         // KAFKA EVENT PRODUCER
         transactionEventProducer.sendAmountTransferEvent(transactionProducerDto);

@@ -80,4 +80,15 @@ public class AuthController {
 
         return ResponseEntity.ok(userResponseDto);
     }
+
+    @GetMapping("/extract-role")
+    public ResponseEntity<String> extractRoleFromToken(@RequestHeader("Authorization") String token){
+        if(token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String role =  authService.extractRole(token.substring(7));
+
+        return ResponseEntity.ok(role);
+    }
 }
