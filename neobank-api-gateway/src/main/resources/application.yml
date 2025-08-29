@@ -1,0 +1,55 @@
+server:
+  port: 7005
+
+spring:
+  application:
+    name: neobank-api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            ## REST CLIENT -> http://localhost:7005/api/auth/login
+            ## API GATEWAY -> http://neobank-auth-service:7000/auth/login
+
+            - id : neobank-auth-service-route
+              uri : http://neobank-auth-service:7000
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - StripPrefix=1
+
+            ## REST CLIENT -> http://localhost:7005/api/account/create-account
+            ## API GATEWAY -> http://neobank-account-service:7001/account/create-account
+
+            - id: neobank-account-service-route
+              uri: http://neobank-account-service:7001
+              predicates:
+                - Path=/api/account/**
+              filters:
+                - StripPrefix=1
+                - JwtValidation
+
+            ## REST CLIENT -> http://localhost:7005/api/transaction/deposit
+            ## API GATEWAY -> http://neobank-transaction-service:7002/transaction/deposit
+
+            - id: neobank-transaction-service-route
+              uri: http://neobank-transaction-service:7002
+              predicates:
+                - Path=/api/transaction/**
+              filters:
+                - StripPrefix=1
+                - JwtValidation
+
+            ## REST CLIENT -> http://localhost:7005/api/audit/users
+            ## API GATEWAY -> http://neobank-transaction-service:7004/audit/users
+
+            - id: neobank-audit-service-route
+              uri: http://neobank-audit-service:7004
+              predicates:
+                - Path=/api/audit/**
+              filters:
+                - StripPrefix=1
+                - JwtValidation
+

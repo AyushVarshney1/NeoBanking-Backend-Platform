@@ -2,6 +2,7 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/neobank-account-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neobank-api-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/neobank-audit-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/neobank-auth-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/neobank-notification-service/src/main/java" charset="UTF-8" />

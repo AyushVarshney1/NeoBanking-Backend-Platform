@@ -57,7 +57,7 @@ public class AuthServiceGrpcClient {
                 }
                 default -> {
                     log.error("Auth service gRPC error: {} - {}", e.getStatus().getCode(), e.getMessage());
-                    throw new RuntimeException("Auth service error: " + e.getStatus().getDescription(), e);
+                    throw new RuntimeException("Auth service error: " + e.getStatus().getDescription());
                 }
             }
         }

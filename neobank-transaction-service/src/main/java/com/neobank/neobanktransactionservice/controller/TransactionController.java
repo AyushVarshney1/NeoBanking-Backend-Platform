@@ -42,7 +42,7 @@ public class TransactionController {
     }
 
 
-    // TRANSFER MONEY TO OTHER ACCOUNT
+    // TRANSFER MONEY TO ANOTHER ACCOUNT
     @PostMapping("/transfer")
     public ResponseEntity<TransactionResponseDto> transfer(@RequestHeader("Authorization") String token, @Validated({Default.class, TransferValidationGroup.class}) @RequestBody TransactionRequestDto transactionRequestDto) {
         if(token == null || !token.startsWith("Bearer ")) {
