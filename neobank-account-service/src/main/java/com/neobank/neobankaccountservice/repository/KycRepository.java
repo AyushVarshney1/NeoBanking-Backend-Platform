@@ -11,4 +11,7 @@ public interface KycRepository extends JpaRepository<Kyc,Long> {
     boolean existsByAccount(Account account);
 
     Kyc findByAccount(Account account);
+
+    boolean existsByPanNumber(String panNumber);
+    boolean existsByAadhaarNumber(String aadhaarNumber);
 }

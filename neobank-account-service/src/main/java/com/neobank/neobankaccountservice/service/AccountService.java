@@ -175,6 +175,14 @@ public class AccountService {
             throw new KycAlreadyCompletedException("Kyc for Account with Account Number : " + account.getAccountNumber() + " already completed");
         }
 
+        if (kycRepository.existsByPanNumber(kycRequestDto.getPanNumber())) {
+            throw new DuplicateKycException("PAN already registered: " + kycRequestDto.getPanNumber());
+        }
+
+        if (kycRepository.existsByAadhaarNumber(kycRequestDto.getAadhaarNumber())) {
+            throw new DuplicateKycException("Aadhaar already registered: " + kycRequestDto.getAadhaarNumber());
+        }
+
         Kyc kyc = accountMapper.toKycModel(kycRequestDto);
         kyc.setAccount(account);
 
