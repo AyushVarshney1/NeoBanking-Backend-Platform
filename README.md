@@ -1,1 +1,1 @@
-# Neobank Microservices Architecture
+# NeoBanking Backend Platform - Scalable Microservices Architecture
