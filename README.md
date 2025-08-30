@@ -31,4 +31,11 @@ All services and databases are **containerized with Docker** and communicate ins
 The **API Gateway** provides a unified entry point, request routing, and the foundation for future load balancing.  
 
 
+# Tech Stack
+- **Backend:** Java, Spring Boot, gRPC
+- **Messaging:** Apache Kafka
+- **Databases:** PostgreSQL, MongoDB
+- **API Gateway:** Spring Cloud Gateway
+- **Containerization:** Docker
+
 
