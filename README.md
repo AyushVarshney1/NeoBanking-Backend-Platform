@@ -9,7 +9,6 @@ NeoBanking Backend Platform is a production-like digital banking system built on
 
 The project integrates Spring Boot, gRPC, Kafka, PostgreSQL, MongoDB, and Docker to simulate real-world transaction workflows, inter-service communication, and asynchronous event processing — laying the foundation for resilient, high-performance financial platforms.
 
----
 
 # System Architecture
 
