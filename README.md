@@ -13,7 +13,7 @@ The project integrates Spring Boot, gRPC, Kafka, PostgreSQL, MongoDB, and Docker
 
 The following diagram illustrates the overall architecture of the NeoBank backend, showcasing how different services interact synchronously (gRPC/REST) and asynchronously (Kafka events).
 
-![Neobank System Architecture](https://github.com/AyushVarshney1/NeoBanking-Backend-Platform/blob/cba46f871304ee295eed91986a40f6f9ffc1f669/Neobank%20Final%20Architecture%20Diagram.png)
+![Neobank System Architecture](https://github.com/AyushVarshney1/NeoBanking-Backend-Platform/blob/7dd1c1792fad89b630b16aedfecc13b1377642a9/Neobank%20Architecture%20Animation.gif)
 
 
 The architecture follows a **domain-driven microservices design**, where each service handles a specific banking domain.  
